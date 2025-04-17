@@ -155,66 +155,61 @@ class MainActivity : AppCompatActivity() {
                 val imgNote = container.binding.imgNote
                 val dayView = container.view
 
-                textView.text = data.date.dayOfMonth.toString()
+                val date = data.date
+                val isSelected = selectedDate == date
+                val hasNote = notesForDays.any { it.date == date }
+                textView.text = date.dayOfMonth.toString()
 
-                if (data.position == DayPosition.MonthDate) {
-                    textView.setTextColorRes(R.color.black)
-                    val isSelected = selectedDate == data.date
-                    val hasNote = notesForDays.any { it.date == data.date }
-
-                    when {
-                        hasNote -> {
-                            imgNote.setImageResource(R.drawable.flower_svgrepo_com)
-                            imgNote.visibility = View.VISIBLE
-                        }
-
-                        isSelected -> {
-                            imgNote.setImageResource(R.drawable.ic_add)
-                            imgNote.visibility = View.VISIBLE
-                        }
-
-                        else -> {
-                            imgNote.visibility = View.GONE
-                        }
-                    }
-
-                    dayView.setOnClickListener {
+                when (data.position) {
+                    DayPosition.MonthDate -> {
+                        textView.setTextColorRes(R.color.black)
                         when {
                             hasNote -> {
-                                if (selectedDate == data.date) {
-                                    showQuickNoteBottomSheet(data.date)
-                                } else {
-                                    val oldSelectedDate = selectedDate
-                                    selectedDate = data.date
-                                    binding.Calendar.notifyDateChanged(oldSelectedDate!!)
-                                    binding.Calendar.notifyDateChanged(data.date)
-                                }
+                                imgNote.setImageResource(R.drawable.flower_svgrepo_com)
+                                imgNote.visibility = View.VISIBLE
                             }
-
                             isSelected -> {
-                                showQuickNoteBottomSheet(data.date)
+                                imgNote.setImageResource(R.drawable.ic_add)
+                                imgNote.visibility = View.VISIBLE
                             }
-
                             else -> {
+                                imgNote.visibility = View.GONE
+                            }
+                        }
+
+                        dayView.setOnClickListener {
+                            if (selectedDate == data.date) {
+                                showQuickNoteBottomSheet(data.date)
+                            } else {
                                 val oldSelectedDate = selectedDate
                                 selectedDate = data.date
                                 binding.Calendar.notifyDateChanged(oldSelectedDate!!)
                                 binding.Calendar.notifyDateChanged(data.date)
                             }
                         }
+
+
+                        if (isSelected) {
+                            circle.setBackgroundResource(R.drawable.circle_selected)
+                            textView.setBackgroundResource(R.drawable.bg_pill)
+                        } else {
+                            circle.setBackgroundResource(R.drawable.circle_default)
+                            textView.setBackgroundResource(0)
+                        }
                     }
 
-                    if (isSelected) {
-                        circle.setBackgroundResource(R.drawable.circle_selected)
-                        textView.setBackgroundResource(R.drawable.bg_pill)
-                    } else {
+                    else -> {
+                        textView.setTextColorRes(R.color.colorAccent)
+                        if (hasNote) {
+                            imgNote.setImageResource(R.drawable.flower_svgrepo_com)
+                            imgNote.visibility = View.VISIBLE
+                        } else {
+                            imgNote.visibility = View.GONE
+                        }
+                        dayView.setOnClickListener(null)
                         circle.setBackgroundResource(R.drawable.circle_default)
                         textView.setBackgroundResource(0)
                     }
-                } else {
-                    imgNote.visibility = View.GONE
-                    textView.setTextColorRes(R.color.colorAccent)
-                    container.view.setOnClickListener(null)
                 }
             }
 
